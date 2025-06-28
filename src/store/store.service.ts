@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Store } from 'src/entity/store.entity';
 import { User } from 'src/entity/user.entity';
 import { CreateStoreDto } from './dto/create-store.dto';
+import { UpdateStoreDto } from './dto/update-store.dto';
 
 @Injectable()
 export class StoreService {
@@ -59,6 +60,7 @@ export class StoreService {
     ===========================================>*/
 
     async getStoreById(id: number): Promise<Store> {
+
         const store = await this.storeRepository.findOne({ where: { id }, relations: ['owner'] });
 
         if (!store) {
@@ -71,7 +73,29 @@ export class StoreService {
     /*<========================================>
        🚩      Get Single Store By ID End     🚩
     ===========================================>*/
+    /*<========================================>
+         🏳️  Update Store By ID Start    🏳️
+    ===========================================>*/
+    async update(id: number, updateStoreDto: UpdateStoreDto, userId: number): Promise<Store> {
 
+        const store = await this.storeRepository.findOne({ where: { id }, relations: ['owner'] });
+
+        if (!store) {
+            throw new Error('Store not found');
+        }
+
+        if (store.owner.id !== userId) {
+            throw new Error('You are not authorized to update this store');
+        }
+
+        const updateStore = Object.assign(store, updateStoreDto);
+
+        return this.storeRepository.save(updateStore);
+    }
+
+    /*<========================================>
+       🚩    Get Single Store By ID End     🚩
+    ===========================================>*/
 
 
 }
