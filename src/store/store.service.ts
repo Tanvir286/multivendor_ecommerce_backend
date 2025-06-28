@@ -47,11 +47,31 @@ export class StoreService {
     ===========================================>*/
 
     async getAllStores(): Promise<Store[]> {
-       return this.storeRepository.find();
+       return this.storeRepository.find({relations: ['owner']});
     }
 
     /*<========================================>
        🚩      Get All Create Store End     🚩
     ===========================================>*/
+
+    /*<========================================>
+         🏳️  Get Single Store By ID Start    🏳️
+    ===========================================>*/
+
+    async getStoreById(id: number): Promise<Store> {
+        const store = await this.storeRepository.findOne({ where: { id }, relations: ['owner'] });
+
+        if (!store) {
+            throw new Error('Store not found');
+        }
+
+        return store;
+    }
+
+    /*<========================================>
+       🚩      Get Single Store By ID End     🚩
+    ===========================================>*/
+
+
 
 }

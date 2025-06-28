@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
@@ -25,7 +25,7 @@ export class StoreController {
 
 
   /*🏳️<===============(Get All Stores Start)===============>🏳️ */
-  @Post('getAll')
+  @Get('getAll')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all stores' })
@@ -35,6 +35,18 @@ export class StoreController {
     return this.storeService.getAllStores();
   }
   /*🚩<===============(Get All Stores End)===============>🚩 */
+
+  /*🏳️<===============(Get Store By ID Start)===============>🏳️ */
+  @Get('getSingleStore/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get store by ID' })
+  @ApiResponse({ status: 200, description: 'Store retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'Store not found' })
+  async getStoreById(@Param('id') id: number) {
+    return this.storeService.getStoreById(id);
+  }
+  /*🚩<===============(Get Store By ID End)===============>🚩 */
 
 
 }
