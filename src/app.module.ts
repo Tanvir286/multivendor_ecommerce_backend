@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { ProductModule } from './product/product.module';
 import { Product } from './entity/product.entity';
+import { StoreModule } from './store/store.module';
 
 
 @Module({
@@ -17,10 +18,10 @@ import { Product } from './entity/product.entity';
       username: "postgres",
       password: "1943",
       database: "multi_ecommerce",
-      entities: [User,Product],
+      entities: [User,Product,StoreModule],
       synchronize: true,
     }), 
-    AuthModule, ProductModule
+    AuthModule, ProductModule, StoreModule
   ],
   controllers: [AppController],
   providers: [AppService],
