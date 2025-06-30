@@ -29,7 +29,7 @@ export class User {
   @Column({ nullable: true }) 
   refreshToken?: string; 
 
-  @OneToMany(() => Store, (store) => store.owner)
+  @OneToMany(() => Store, (store) => store.storeOwner) // changed from store.owner
   stores: Store[];
 
 }

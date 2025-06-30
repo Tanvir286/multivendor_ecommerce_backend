@@ -41,7 +41,7 @@ export class ProductService {
     }
 
     // store kuja hoitase
-    const store = await this.storeRepository.findOne({ where: { id: storeId, owner: { id: userId } } });
+    const store = await this.storeRepository.findOne({ where: { id: storeId, storeOwner: { id: userId } } });
     if (!store) { 
         throw new NotFoundException(`Store ${storeId} not found.`);
     }

@@ -23,22 +23,22 @@ export class StoreService {
    
     async create(createStoreDto: CreateStoreDto,userId: number ): Promise<Store> {
  
-        const { name, description } = createStoreDto;
+        const { storeName, storeDescription } = createStoreDto;
 
         const user = await this.userRepository.findOne({ where: { id: userId } });
         if (!user) {
             throw new NotFoundException('User not found');
         }
 
-        const existingStore = await this.storeRepository.findOne({ where: { name } });
+        const existingStore = await this.storeRepository.findOne({ where: { storeName } });
         if (existingStore) {
             throw new NotFoundException('Store with this name already exists');
         }
 
         const store = this.storeRepository.create({
-            name,
-            description,
-            owner: user,
+            storeName,
+            storeDescription,
+            storeOwner: user,
         });
         return this.storeRepository.save(store);
     }
@@ -52,8 +52,8 @@ export class StoreService {
     ===========================================>*/
     async getStoresByUser(userId: number): Promise<Store[]> {
         return this.storeRepository.find({
-            where: { owner: { id: userId } },
-            relations: ['owner'],});
+            where: { storeOwner: { id: userId } },
+            relations: ['storeOwner'],});
     }
     /*<========================================>
        🚩      Get All Create Store End     🚩
@@ -67,14 +67,14 @@ export class StoreService {
     async getStoreById(id: number, userId: number): Promise<Store> {
         const store = await this.storeRepository.findOne({
             where: { id },
-            relations: ['owner'],
+            relations: ['storeOwner'],
         });
 
         if (!store) {
             throw new NotFoundException('Store not found');
         }
 
-        if (store.owner.id !== userId) {
+        if (store.storeOwner.id !== userId) {
             throw new NotFoundException('You do not have access to this store');
         }
      return store;
@@ -92,14 +92,14 @@ export class StoreService {
     
     const store = await this.storeRepository.findOne({
         where: { id: storeId },
-        relations: ['owner'], 
+        relations: ['storeOwner'], 
     });
 
     if (!store) {
         throw new NotFoundException('Store not found');
     }
 
-    if (store.owner.id !== userId) {
+    if (store.storeOwner.id !== userId) {
         throw new ForbiddenException('You do not have access to delete this store');
     }
 
@@ -120,14 +120,14 @@ export class StoreService {
        Promise<{ message: string; store: Store }> {
         const store = await this.storeRepository.findOne({
             where: { id: storeId },
-            relations: ['owner'],
+            relations: ['storeOwner'],
         });
 
     if (!store) {
         throw new NotFoundException('Store not found');
     }
 
-    if (store.owner.id !== userId) {
+    if (store.storeOwner.id !== userId) {
         throw new ForbiddenException('You do not have access to update this store');
     }
 

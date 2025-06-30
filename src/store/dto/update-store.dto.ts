@@ -13,7 +13,7 @@ export class UpdateStoreDto {
     @IsString()  
     @IsNotEmpty()
     @IsOptional()
-    name: string;
+    storeName: string;  // Changed from name
 
 
     @ApiProperty({
@@ -23,7 +23,7 @@ export class UpdateStoreDto {
     @IsString()
     @IsNotEmpty()
     @IsOptional()
-    description: string;
+    storeDescription: string;
 
 
 

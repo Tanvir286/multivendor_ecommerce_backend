@@ -9,15 +9,15 @@ export class Store {
   id: number;
 
   @Column({ unique: true })
-  name: string;
+   storeName: string; // changed from name
 
   @Column()
-  description: string;
+  storeDescription: string; // changed from description
 
   @CreateDateColumn()
   createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.stores)
-  owner: User;
+  storeOwner: User; // changed from owner
 
 }

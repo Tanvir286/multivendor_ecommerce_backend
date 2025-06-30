@@ -11,7 +11,7 @@ export class CreateStoreDto {
     })
     @IsString()  
     @IsNotEmpty()
-    name: string;
+    storeName: string;  // Changed from name
 
 
     @ApiProperty({
@@ -20,7 +20,7 @@ export class CreateStoreDto {
     })
     @IsString()
     @IsNotEmpty()
-    description: string;
+    storeDescription: string;
 
 
 
