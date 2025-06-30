@@ -28,15 +28,14 @@ export class AuthService {
               username } = registerDto;
         
         const exitingUser = await this.usersRepository.findOne({ where: { email } });
-        // যদি ইমেইল দিয়ে ইউজার আগে থেকেই রেজিস্টার করা থাকে তাহলে UnauthorizedException ছুড়ে দিবে।
+        
         if (exitingUser) {
             throw new UnauthorizedException('User already exists');
         }
-        
+        //ইউজারের পাসওয়ার্ডকে হ্যাশ করে রাখা হচ্ছে।
         const hashedPassword = await bcrypt.hash(password, 10);
-        // নতুন ইউজার তৈরি করছে এবং সেই ইউজারকে ডাটাবেজে সেভ করছে।
+    
         const newUser = this.usersRepository.create({
-
             email: email,
             password: hashedPassword,
             firstName: firstName,
@@ -74,7 +73,6 @@ export class AuthService {
     /*<========================================>
        🚩       Register Part End        🚩
     ===========================================>*/
-
     /*<========================================>
        🏳️       Login Part Start        🏳️
     ===========================================>*/
@@ -84,12 +82,11 @@ export class AuthService {
         const { email, password } = loginDto;
         
         const user = await this.usersRepository.findOne({ where: { email } });
-
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
 
+        const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');
         }

@@ -24,8 +24,7 @@ export class User {
   username: string; 
 
   @Column()
-  role: string; // 'admin' | 'user' | 'guest'
-
+  role: string; 
 
   @Column({ nullable: true }) 
   refreshToken?: string; 

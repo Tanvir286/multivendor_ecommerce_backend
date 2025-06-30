@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards,    UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards,    UploadedFile, UseInterceptors, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags,  ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { JwtAuthGuard } from 'src/jwt-auth.guard';
@@ -51,25 +51,27 @@ export class ProductController {
   })
   @ApiOperation({ summary: 'Create a new product with image' })
   @ApiResponse({ status: 201, description: 'Product created successfully.' })
-  async createProduct(@UploadedFile() file: Express.Multer.File,@Body() body: any) {
+  async createProduct(@UploadedFile() file: Express.Multer.File,@Body() body: any, @Request() req:any) {
    
-    if (!body || !body.name || !body.description || !body.price || !body.stock) {
-      throw new Error('Missing fields in request body');
-    }
+    if (!body || !body.name || !body.description || !body.price || !body.stock || !body.storeId) {
+     throw new Error('Missing fields in request body');
+   }
 
-    const createProductDto: CreateProductDto = {
-      name: body.name,
-      description: body.description,
-      price: Number(body.price),
-      stock: Number(body.stock),
-    };
+  const createProductDto: CreateProductDto = {
+    name: body.name,
+    description: body.description,
+    price: Number(body.price),
+    stock: Number(body.stock),
+    storeId: Number(body.storeId),
+  };
 
     const imagePath = file ? `uploads/${file.filename}` : null;
+    const userId = req.user.id;
 
-    return this.productService.createProduct(createProductDto,imagePath ?? undefined); // null বা undefined হলে, undefined পাঠাবে
+    return this.productService.createProduct(userId,createProductDto,imagePath ?? undefined  ); // null বা undefined হলে, undefined পাঠাবে
 
   }
-  /*🚩<===============(Get All Product End)===============>🚩*/
+  /*🚩<===============(Create Product End)===============>🚩*/
 
 
 

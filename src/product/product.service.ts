@@ -2,15 +2,23 @@
 import { Injectable, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/entity/product.entity';
+import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Store } from 'src/entity/store.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
+
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+
+     @InjectRepository(Store)
+    private storeRepository: Repository<Store>,
   ) {}
 
     /*<========================================>
@@ -18,11 +26,32 @@ export class ProductService {
     ===========================================>*/
 
     async createProduct(
+        userId: number ,
         createProductDto: CreateProductDto,
-        imagePath?: string ): 
-        Promise<{ message: string; product?: Product }> {
+        imagePath?: string ,
+    ): 
+    Promise<{ message: string; product?: Product }> {
 
-    const product = this.productRepository.create({...createProductDto,imageUrl: imagePath});
+    const { name, description, price, stock, storeId } = createProductDto; 
+    
+    // user kuja hoitase
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+        throw new NotFoundException(`User ${userId} not found.`);
+    }
+
+    // store kuja hoitase
+    const store = await this.storeRepository.findOne({ where: { id: storeId, owner: { id: userId } } });
+    if (!store) { 
+        throw new NotFoundException(`Store ${storeId} not found.`);
+    }
+
+    const product = this.productRepository.create({
+                    ...createProductDto,
+                    imageUrl: imagePath,
+                    vendor: user,
+                    store: store,
+                });
 
     try {
         const savedProduct = await this.productRepository.save(product);
@@ -63,7 +92,7 @@ export class ProductService {
          🏳️   get All Product  Start    🏳️
     ===========================================>*/
     async getAllProduct(): Promise<Product[]> {
-      return this.productRepository.find();
+      return this.productRepository.find({relations: ['vendor', 'store']});
     }
 
     /*<========================================>
@@ -87,7 +116,6 @@ export class ProductService {
     }
 
     Object.assign(product, updateProductDto);
-
 
     if (imagePath) {
         product.imageUrl = imagePath;

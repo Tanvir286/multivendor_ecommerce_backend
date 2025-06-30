@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Store } from 'src/entity/store.entity';
 import { User } from 'src/entity/user.entity';
+import { Repository } from 'typeorm';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 
@@ -21,20 +21,25 @@ export class StoreService {
          🏳️   Create Store Start    🏳️
    ===========================================>*/
    
-   async create(createStoreDto: CreateStoreDto,userId: number): Promise<Store> {
+    async create(createStoreDto: CreateStoreDto,userId: number ): Promise<Store> {
+ 
+        const { name, description } = createStoreDto;
 
         const user = await this.userRepository.findOne({ where: { id: userId } });
-
         if (!user) {
-            throw new Error('User not found');
+            throw new NotFoundException('User not found');
+        }
+
+        const existingStore = await this.storeRepository.findOne({ where: { name } });
+        if (existingStore) {
+            throw new NotFoundException('Store with this name already exists');
         }
 
         const store = this.storeRepository.create({
-            ...createStoreDto,
+            name,
+            description,
             owner: user,
-            createdAt: new Date(),
         });
-
         return this.storeRepository.save(store);
     }
 
@@ -42,60 +47,110 @@ export class StoreService {
        🚩       Create Store End        🚩
     ===========================================>*/
 
-
-    /*<========================================>
+     /*<========================================>
          🏳️  Get All Create Store Start    🏳️
     ===========================================>*/
-
-    async getAllStores(): Promise<Store[]> {
-       return this.storeRepository.find({relations: ['owner']});
+    async getStoresByUser(userId: number): Promise<Store[]> {
+        return this.storeRepository.find({
+            where: { owner: { id: userId } },
+            relations: ['owner'],});
     }
-
     /*<========================================>
        🚩      Get All Create Store End     🚩
     ===========================================>*/
 
-    /*<========================================>
+
+   /*<========================================>
          🏳️  Get Single Store By ID Start    🏳️
     ===========================================>*/
-
-    async getStoreById(id: number): Promise<Store> {
-
-        const store = await this.storeRepository.findOne({ where: { id }, relations: ['owner'] });
+ 
+    async getStoreById(id: number, userId: number): Promise<Store> {
+        const store = await this.storeRepository.findOne({
+            where: { id },
+            relations: ['owner'],
+        });
 
         if (!store) {
-            throw new Error('Store not found');
+            throw new NotFoundException('Store not found');
         }
 
-        return store;
+        if (store.owner.id !== userId) {
+            throw new NotFoundException('You do not have access to this store');
+        }
+     return store;
     }
 
     /*<========================================>
        🚩      Get Single Store By ID End     🚩
     ===========================================>*/
+
     /*<========================================>
-         🏳️  Update Store By ID Start    🏳️
+         🏳️  Delete Store By ID Start    🏳️
     ===========================================>*/
-    async update(id: number, updateStoreDto: UpdateStoreDto, userId: number): Promise<Store> {
+   
+   async deleteStoreById(storeId: number, userId: number): Promise<{ message: string }> {
+    
+    const store = await this.storeRepository.findOne({
+        where: { id: storeId },
+        relations: ['owner'], 
+    });
 
-        const store = await this.storeRepository.findOne({ where: { id }, relations: ['owner'] });
-
-        if (!store) {
-            throw new Error('Store not found');
-        }
-
-        if (store.owner.id !== userId) {
-            throw new Error('You are not authorized to update this store');
-        }
-
-        const updateStore = Object.assign(store, updateStoreDto);
-
-        return this.storeRepository.save(updateStore);
+    if (!store) {
+        throw new NotFoundException('Store not found');
     }
 
-    /*<========================================>
-       🚩    Get Single Store By ID End     🚩
+    if (store.owner.id !== userId) {
+        throw new ForbiddenException('You do not have access to delete this store');
+    }
+
+    await this.storeRepository.remove(store);
+
+    return { message: 'Store deleted successfully' };
+    
+   }
+
+   /*<========================================>
+       🚩  Delete Store By ID End    🚩
+   ===========================================>*/
+   /*<========================================>
+         🏳️  Update Store By ID Start    🏳️
     ===========================================>*/
+
+    async updateStoreById(storeId: number, updateStoreDto: UpdateStoreDto, userId: number): 
+       Promise<{ message: string; store: Store }> {
+        const store = await this.storeRepository.findOne({
+            where: { id: storeId },
+            relations: ['owner'],
+        });
+
+    if (!store) {
+        throw new NotFoundException('Store not found');
+    }
+
+    if (store.owner.id !== userId) {
+        throw new ForbiddenException('You do not have access to update this store');
+    }
+
+    Object.assign(store, updateStoreDto);
+
+    const updated = await this.storeRepository.save(store);
+
+
+    return {
+        message: 'Store updated successfully',
+        store: updated,
+    };
+
+    }
+  
+    /*<========================================>
+         🚩  Update Store By ID End    🚩
+    ===========================================>*/
+
+ 
+
+
+
 
 
 }

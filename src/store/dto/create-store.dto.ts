@@ -1,3 +1,4 @@
+
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString } from "class-validator";
 
@@ -8,7 +9,7 @@ export class CreateStoreDto {
         description: 'Name of the store',
         example: 'My Awesome Store'
     })
-    @IsString()
+    @IsString()  
     @IsNotEmpty()
     name: string;
 
@@ -21,13 +22,6 @@ export class CreateStoreDto {
     @IsNotEmpty()
     description: string;
 
-
-    @ApiProperty({
-        description: 'Store Image URL',
-        example: 'https://example.com/store-image.jpg',
-        required: false,
-    })
-    imageUrl?: string;
 
 
 }

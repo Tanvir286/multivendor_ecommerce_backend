@@ -1,28 +1,23 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./user.entity";
 
-Entity()
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
+import { User } from './user.entity';
+
+@Entity()
 export class Store {
+    
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column({ unique: true })
+  name: string;
 
-    @Column({ unique: true })
-    name: string;
+  @Column()
+  description: string;
 
-    @Column()
-    description: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @Column()
-    location: string;
-
-    @Column({ nullable: true })
-    image: string; 
-
-    @ManyToOne (() => User, (user) => user.stores)
-    owner: User;
-
-    @CreateDateColumn()
-    createdAt: Date;
+  @ManyToOne(() => User, (user) => user.stores)
+  owner: User;
 
 }

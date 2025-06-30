@@ -7,6 +7,7 @@ import { User } from './entity/user.entity';
 import { ProductModule } from './product/product.module';
 import { Product } from './entity/product.entity';
 import { StoreModule } from './store/store.module';
+import { Store } from './entity/store.entity';
 
 
 @Module({
@@ -18,7 +19,7 @@ import { StoreModule } from './store/store.module';
       username: "postgres",
       password: "1943",
       database: "multi_ecommerce",
-      entities: [User,Product,StoreModule],
+      entities: [User,Product,Store],
       synchronize: true,
     }), 
     AuthModule, ProductModule, StoreModule
