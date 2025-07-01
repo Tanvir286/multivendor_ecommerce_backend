@@ -3,23 +3,23 @@ import { IsNumber, IsOptional, IsPositive, IsString, Min } from 'class-validator
 export class UpdateProductDto {
   @IsOptional()
   @IsString()
-  name?: string;
+  productName?: string;
 
   @IsOptional()
   @IsString()
-  description?: string;
+  productDescription?: string;
 
   @IsOptional()
   @IsNumber()
   @IsPositive() // Ensures the price is a positive number
   @Min(0) // Accepts 0 and above
-  price?: number;
+  productPrice?: number;
 
   @IsOptional()
   @IsNumber()
   @IsPositive()
   @Min(0)
-  stock?: number;
+  productStock?: number;
 
 }
 

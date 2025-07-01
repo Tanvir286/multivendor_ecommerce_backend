@@ -95,67 +95,70 @@ export class ProductController {
 
 
 
-  // /*🏳️<===============(Update A Product Start)===============>🏳️ */
-  // @Put('update/:id')
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(
-  //   FileInterceptor('image', {
-  //     storage: diskStorage({
-  //       destination: './uploads',
-  //       filename: (req, file, cb) => {
-  //         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-  //         const ext = extname(file.originalname);
-  //         cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-  //       },
-  //     }),
-  //   }),
-  // )
-  // @ApiConsumes('multipart/form-data')
-  // @ApiBody({
-  //   schema: {
-  //     type: 'object',
-  //     properties: {
-  //       name: { type: 'string', example: 'Updated T-shirt' },
-  //       description: { type: 'string', example: 'Updated Cotton T-shirt' },
-  //       price: { type: 'number', example: 120 },
-  //       stock: { type: 'number', example: 5 },
-  //       image: {
-  //         type: 'string',
-  //         format: 'binary',      
-  //       },
-  //     },
-  //   },
-  // })
-  // @ApiBearerAuth()
-  // @ApiOperation({ summary: 'Update a product with optional image' })
-  // @ApiResponse({ status: 200, description: 'Product updated successfully.' })
-  // @ApiResponse({ status: 400, description: 'Bad Request.' })
-  // @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  // @ApiResponse({ status: 404, description: 'Not Found.' })
-  // async updateProduct(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @UploadedFile() file: Express.Multer.File,
-  //   @Body() UpdateProductDto: UpdateProductDto,
-  // ) {
-  //   const imagePath = file ? `uploads/${file.filename}` : undefined;
-  //   return this.productService.updateProduct(id, UpdateProductDto, imagePath);
-  // }
-  //   /*🚩<===============(Update A Product End)===============>🚩*/
+  /*🏳️<===============(Update A Product Start)===============>🏳️ */
+  @Put('update/:id')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', example: 'Updated T-shirt' },
+        description: { type: 'string', example: 'Updated Cotton T-shirt' },
+        price: { type: 'number', example: 120 },
+        stock: { type: 'number', example: 5 },
+        image: {
+          type: 'string',
+          format: 'binary',      
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a product with optional image' })
+  @ApiResponse({ status: 200, description: 'Product updated successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  async updateProduct(
+    @Param('id') id: number,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() UpdateProductDto: UpdateProductDto,
+    @Request() req: any
+  ) {
+    const imagePath = file ? `uploads/${file.filename}` : undefined;
+    const userId = req.user.id;
+    return this.productService.updateProduct(id, UpdateProductDto,userId, imagePath);
+  }
+    /*🚩<===============(Update A Product End)===============>🚩*/
 
 
-  //   /*🏳️<===============(Delete A Product Start)===============>🏳️ */
-  //   @Delete('delete/:id')
-  //   @UseGuards(JwtAuthGuard)  
-  //   @ApiBearerAuth()
-  //   @ApiOperation({ summary: 'Delete a product' })
-  //   @ApiResponse({ status: 200, description: 'Product deleted successfully.' })
-  //   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  //   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  //   @ApiResponse({ status: 404, description: 'Not Found.' })
-  //   async deleteProduct(@Param('id', ParseIntPipe) id: number) {
-  //       return this.productService.deleteProduct(id);
-  //   }
-  // /*🚩<===============(Delete A Product End)===============>🚩*/
+    /*🏳️<===============(Delete A Product Start)===============>🏳️ */
+    @Delete('delete/:id')
+    @UseGuards(JwtAuthGuard)  
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Delete a product' })
+    @ApiResponse({ status: 200, description: 'Product deleted successfully.' })
+    @ApiResponse({ status: 400, description: 'Bad Request.' })
+    @ApiResponse({ status: 401, description: 'Unauthorized.' })
+    @ApiResponse({ status: 404, description: 'Not Found.' })
+    async deleteProduct(@Param('id') id: number, @Request() req: any) {
+        const userId = req.user.id;
+        return this.productService.deleteProduct(id, userId);
+    }
+  /*🚩<===============(Delete A Product End)===============>🚩*/
 
 
 

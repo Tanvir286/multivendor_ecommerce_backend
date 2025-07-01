@@ -126,55 +126,71 @@ export class ProductService {
     ===========================================>*/
 
 
-    // /*<========================================>
-    //    🏳️  Update A Single Product  Start  🏳️
-    // ===========================================>*/
-    // async updateProduct(
-    //    id: number,
-    //    updateProductDto: UpdateProductDto,
-    //    imagePath?: string,
-    // ): Promise<Product> {
+    /*<========================================>
+       🏳️  Update A Single Product  Start  🏳️
+    ===========================================>*/
+    async updateProduct(
+       id: number,
+       updateProductDto: UpdateProductDto,
+       userId: number,
+       imagePath?: string,
+    ): Promise<Product> {
     
-    // const product = await this.productRepository.findOne({ where: { id } });
+    const product = await this.productRepository.findOne({
+        where: { id },
+        relations: ['vendor','store'], // vendor লোড করো
+    });
 
-    // if (!product) {
-    //     throw new NotFoundException(`Product ${id} not found.`);
-    // }
+    if (!product) {
+        throw new NotFoundException(`Product ${id} not found.`);
+    }
 
-    // Object.assign(product, updateProductDto);
 
-    // if (imagePath) {
-    //     product.imageUrl = imagePath;
-    // }
+    if (product.vendor.id !== userId) {
+        throw new NotFoundException(`Product ${id} not found or you are not authorized.`);
+    }
 
-    // return this.productRepository.save(product);
-    // }
 
-    // /*<========================================>
-    //    🚩      Update A Single Product End     🚩
-    // ===========================================>*/
+    if (imagePath) {
+        product.productImageUrl = imagePath;
+    }
+
+    Object.assign(product, updateProductDto);
+
+    return this.productRepository.save(product);
+    }
+
+    /*<========================================>
+       🚩      Update A Single Product End     🚩
+    ===========================================>*/
     
 
-    // /*<========================================>
-    //    🏳️  Delete A Single Product  Start  🏳️
-    // ===========================================>*/
-  
-    // async deleteProduct(id: number): Promise<{ message: string }> {
-        
-    //     const product = await this.productRepository.findOne({ where: { id: Number(id) } });
-        
-    //     if (!product) {
-    //         throw new NotFoundException(`Product ${id} not found.`);
-    //     }
-        
-    //     await this.productRepository.remove(product);
-    //     return { message: `Product ${id} deleted successfully.` };
-    // }
+    /*<========================================>
+       🏳️  Delete A Single Product  Start  🏳️
+    ===========================================>*/
 
-    // /*<========================================>
-    //    🚩      Delete A Single Product End     🚩
-    // ===========================================>*/
+    async deleteProduct(id: number, userId: number): Promise<{ message: string }> {
+
+        const product = await this.productRepository.findOne({ where: { id:id } });
+        
+        if (!product) {
+            throw new NotFoundException(`Product ${id} not found.`);
+        }
+
+        if (product.vendor.id !== userId) {
+            throw new NotFoundException(`Product ${id} not found or you are not authorized.`);
+        }
+        
+        await this.productRepository.remove(product);
+        return { message: `Product ${id} deleted successfully.` };
+    }
+
+    /*<========================================>
+       🚩      Delete A Single Product End     🚩
+    ===========================================>*/
+
 
 
 }
+
 

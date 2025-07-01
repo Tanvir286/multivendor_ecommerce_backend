@@ -32,5 +32,5 @@ export class CreateProductDto {
    @IsNumber()
    storeId: number;
    
-
 }   
+
