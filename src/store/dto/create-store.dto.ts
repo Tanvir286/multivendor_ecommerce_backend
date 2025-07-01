@@ -8,7 +8,7 @@ export class CreateStoreDto {
     @ApiProperty({
         description: 'Name of the store',
         example: 'My Awesome Store'
-    })
+    }) 
     @IsString()  
     @IsNotEmpty()
     storeName: string;  // Changed from name

@@ -7,25 +7,26 @@ export class CreateProductDto {
     @ApiProperty({ description: 'Product name', example: "Product Name" })
     @IsString()
     @IsNotEmpty()
-    name: string;
+    productName: string;
 
     @ApiProperty({ description: 'Product description', example: "Product Description" })
     @IsString()
     @IsNotEmpty()
-    description: string;
+    productDescription: string;
 
     @ApiProperty({ description: 'Product price', example: 100 })
     @IsNotEmpty()
     @IsNumber()
     @Min(0)
-    price: number;
+    productPrice: number;
 
     @ApiProperty({ description: 'Product stock', example: 50 })
     @IsNotEmpty()   
     @IsNumber()
     @Min(0)
-    stock: number;
+    productStock: number;
 
+    
    @ApiProperty({description: 'Store ID', example: 1})
    @IsNotEmpty()
    @IsNumber()

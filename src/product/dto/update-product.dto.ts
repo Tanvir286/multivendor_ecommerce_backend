@@ -20,5 +20,6 @@ export class UpdateProductDto {
   @IsPositive()
   @Min(0)
   stock?: number;
+
 }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards,    UploadedFile, UseInterceptors, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards,    UploadedFile, UseInterceptors, Request, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags,  ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { JwtAuthGuard } from 'src/jwt-auth.guard';
@@ -22,7 +22,7 @@ export class ProductController {
   @Post('create')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
-    FileInterceptor('image', {
+    FileInterceptor('productImageUrl', {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
@@ -51,25 +51,12 @@ export class ProductController {
   })
   @ApiOperation({ summary: 'Create a new product with image' })
   @ApiResponse({ status: 201, description: 'Product created successfully.' })
-  async createProduct(@UploadedFile() file: Express.Multer.File,@Body() body: any, @Request() req:any) {
-   
-    if (!body || !body.name || !body.description || !body.price || !body.stock || !body.storeId) {
-     throw new Error('Missing fields in request body');
-   }
-
-  const createProductDto: CreateProductDto = {
-    name: body.name,
-    description: body.description,
-    price: Number(body.price),
-    stock: Number(body.stock),
-    storeId: Number(body.storeId),
-  };
+  async createProduct(@UploadedFile() file: Express.Multer.File,@Body() createProductDto: CreateProductDto, @Request() req:any) {
 
     const imagePath = file ? `uploads/${file.filename}` : null;
     const userId = req.user.id;
 
-    return this.productService.createProduct(userId,createProductDto,imagePath ?? undefined  ); // null বা undefined হলে, undefined পাঠাবে
-
+   return this.productService.createProduct(userId,createProductDto,imagePath ?? undefined  );
   }
   /*🚩<===============(Create Product End)===============>🚩*/
 
@@ -83,8 +70,10 @@ export class ProductController {
    @ApiResponse({ status: 200, description: 'Products retrieved successfully.' })
    @ApiResponse({ status: 401, description: 'Unauthorized.' })
    @ApiResponse({ status: 404, description: 'Not Found.' })
-    async getProductById(@Param('id', ParseIntPipe) id: number) {
-         return this.productService.getProductById(id);
+    async getProductById(@Param('id') id: number,@Request() req: any) {
+    const userId = req.user.id;
+    console.log(userId)
+         return this.productService.getProductById(id,userId);
    }
   /*🚩<===============(Get A Product End)===============>🚩*/
 
@@ -97,74 +86,76 @@ export class ProductController {
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'Products retrieved successfully.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  async getAllProducts() {
-      return this.productService.getAllProduct();
+  async getAllProducts(@Request() req: any) {
+      const userId = req.user.id;
+      console.log(userId)
+      return this.productService.getAllProduct(userId);
   }
   /*🚩<===============(Get All Product End)===============>🚩*/
 
 
 
-  /*🏳️<===============(Update A Product Start)===============>🏳️ */
-  @Put('update/:id')
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-        },
-      }),
-    }),
-  )
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'Updated T-shirt' },
-        description: { type: 'string', example: 'Updated Cotton T-shirt' },
-        price: { type: 'number', example: 120 },
-        stock: { type: 'number', example: 5 },
-        image: {
-          type: 'string',
-          format: 'binary',      
-        },
-      },
-    },
-  })
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a product with optional image' })
-  @ApiResponse({ status: 200, description: 'Product updated successfully.' })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
-  async updateProduct(
-    @Param('id', ParseIntPipe) id: number,
-    @UploadedFile() file: Express.Multer.File,
-    @Body() UpdateProductDto: UpdateProductDto,
-  ) {
-    const imagePath = file ? `uploads/${file.filename}` : undefined;
-    return this.productService.updateProduct(id, UpdateProductDto, imagePath);
-  }
-    /*🚩<===============(Update A Product End)===============>🚩*/
+  // /*🏳️<===============(Update A Product Start)===============>🏳️ */
+  // @Put('update/:id')
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(
+  //   FileInterceptor('image', {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //       filename: (req, file, cb) => {
+  //         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+  //         const ext = extname(file.originalname);
+  //         cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  //       },
+  //     }),
+  //   }),
+  // )
+  // @ApiConsumes('multipart/form-data')
+  // @ApiBody({
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       name: { type: 'string', example: 'Updated T-shirt' },
+  //       description: { type: 'string', example: 'Updated Cotton T-shirt' },
+  //       price: { type: 'number', example: 120 },
+  //       stock: { type: 'number', example: 5 },
+  //       image: {
+  //         type: 'string',
+  //         format: 'binary',      
+  //       },
+  //     },
+  //   },
+  // })
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Update a product with optional image' })
+  // @ApiResponse({ status: 200, description: 'Product updated successfully.' })
+  // @ApiResponse({ status: 400, description: 'Bad Request.' })
+  // @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  // @ApiResponse({ status: 404, description: 'Not Found.' })
+  // async updateProduct(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @Body() UpdateProductDto: UpdateProductDto,
+  // ) {
+  //   const imagePath = file ? `uploads/${file.filename}` : undefined;
+  //   return this.productService.updateProduct(id, UpdateProductDto, imagePath);
+  // }
+  //   /*🚩<===============(Update A Product End)===============>🚩*/
 
 
-    /*🏳️<===============(Delete A Product Start)===============>🏳️ */
-    @Delete('delete/:id')
-    @UseGuards(JwtAuthGuard)  
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Delete a product' })
-    @ApiResponse({ status: 200, description: 'Product deleted successfully.' })
-    @ApiResponse({ status: 400, description: 'Bad Request.' })
-    @ApiResponse({ status: 401, description: 'Unauthorized.' })
-    @ApiResponse({ status: 404, description: 'Not Found.' })
-    async deleteProduct(@Param('id', ParseIntPipe) id: number) {
-        return this.productService.deleteProduct(id);
-    }
-  /*🚩<===============(Delete A Product End)===============>🚩*/
+  //   /*🏳️<===============(Delete A Product Start)===============>🏳️ */
+  //   @Delete('delete/:id')
+  //   @UseGuards(JwtAuthGuard)  
+  //   @ApiBearerAuth()
+  //   @ApiOperation({ summary: 'Delete a product' })
+  //   @ApiResponse({ status: 200, description: 'Product deleted successfully.' })
+  //   @ApiResponse({ status: 400, description: 'Bad Request.' })
+  //   @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  //   @ApiResponse({ status: 404, description: 'Not Found.' })
+  //   async deleteProduct(@Param('id', ParseIntPipe) id: number) {
+  //       return this.productService.deleteProduct(id);
+  //   }
+  // /*🚩<===============(Delete A Product End)===============>🚩*/
 
 
 

@@ -11,21 +11,21 @@ export class Product {
   id: number;
 
   @Column({ unique: true })
-  name: string;
+  productName: string;
 
   @Column()
-  description: string;
+  productDescription: string;
 
   @Column()
-  price: number;
+  productPrice: number;
 
   @Column()
-  stock: number;
+  productStock: number;
 
   @Column({ nullable: true }) // allow null for optional image
-  imageUrl: string;
+  productImageUrl: string;
 
-  @ManyToOne(() => User, (user) => user.id )
+  @ManyToOne(() => User, (user) => user.id)
   vendor: User;
 
   @ManyToOne(()=> Store, (store) => store.id)

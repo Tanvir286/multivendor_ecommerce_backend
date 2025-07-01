@@ -32,8 +32,8 @@ export class ProductService {
     ): 
     Promise<{ message: string; product?: Product }> {
 
-    const { name, description, price, stock, storeId } = createProductDto; 
-    
+    const { storeId } = createProductDto; 
+
     // user kuja hoitase
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
@@ -48,7 +48,7 @@ export class ProductService {
 
     const product = this.productRepository.create({
                     ...createProductDto,
-                    imageUrl: imagePath,
+                    productImageUrl: imagePath,
                     vendor: user,
                     store: store,
                 });
@@ -74,15 +74,23 @@ export class ProductService {
     /*<========================================>
           🏳️   get A Single Product  Start    🏳️
     ===========================================>*/
-    async getProductById(id:number): Promise<Product> {
-    
-            const product = await this.productRepository.findOne({ where: { id: Number(id) } });
-            if (!product) {
-                throw new NotFoundException(`Product ${id} not found.`);
-            }
-            return product;
-     
+   async getProductById(id: number, userId: number): Promise<Product> {
+        const product = await this.productRepository.findOne({
+            where: {id},
+            relations: ['vendor', 'store'],
+        });
+
+        if (!product) {
+            throw new NotFoundException(`Product ${id} not found.`);
+        }
+
+        if (product.vendor.id !== userId) {
+            throw new NotFoundException(`Product ${id} not found or you are not authorized.`);
+        }
+
+        return product;
     }
+
     /*<========================================>
        🚩      get A Single Product End     🚩
     ===========================================>*/
@@ -91,8 +99,26 @@ export class ProductService {
     /*<========================================>
          🏳️   get All Product  Start    🏳️
     ===========================================>*/
-    async getAllProduct(): Promise<Product[]> {
-      return this.productRepository.find({relations: ['vendor', 'store']});
+   async getAllProduct(userId: number): Promise<{ message: string; products?: Product[] }> {
+        const products = await this.productRepository.find({
+            where: {
+            store: {
+                storeOwner: {
+                id: userId,
+                },
+            },
+            },
+            relations: ['vendor', 'store'],
+        });
+
+        if (products.length === 0) {
+            return { message: 'NO Product Found' };
+        }
+
+        return {
+            message: 'Product Successful Return',
+            products: products,
+        };
     }
 
     /*<========================================>
@@ -100,54 +126,54 @@ export class ProductService {
     ===========================================>*/
 
 
-    /*<========================================>
-       🏳️  Update A Single Product  Start  🏳️
-    ===========================================>*/
-    async updateProduct(
-       id: number,
-       updateProductDto: UpdateProductDto,
-       imagePath?: string,
-    ): Promise<Product> {
+    // /*<========================================>
+    //    🏳️  Update A Single Product  Start  🏳️
+    // ===========================================>*/
+    // async updateProduct(
+    //    id: number,
+    //    updateProductDto: UpdateProductDto,
+    //    imagePath?: string,
+    // ): Promise<Product> {
     
-    const product = await this.productRepository.findOne({ where: { id } });
+    // const product = await this.productRepository.findOne({ where: { id } });
 
-    if (!product) {
-        throw new NotFoundException(`Product ${id} not found.`);
-    }
+    // if (!product) {
+    //     throw new NotFoundException(`Product ${id} not found.`);
+    // }
 
-    Object.assign(product, updateProductDto);
+    // Object.assign(product, updateProductDto);
 
-    if (imagePath) {
-        product.imageUrl = imagePath;
-    }
+    // if (imagePath) {
+    //     product.imageUrl = imagePath;
+    // }
 
-    return this.productRepository.save(product);
-    }
+    // return this.productRepository.save(product);
+    // }
 
-    /*<========================================>
-       🚩      Update A Single Product End     🚩
-    ===========================================>*/
+    // /*<========================================>
+    //    🚩      Update A Single Product End     🚩
+    // ===========================================>*/
     
 
-    /*<========================================>
-       🏳️  Delete A Single Product  Start  🏳️
-    ===========================================>*/
+    // /*<========================================>
+    //    🏳️  Delete A Single Product  Start  🏳️
+    // ===========================================>*/
   
-    async deleteProduct(id: number): Promise<{ message: string }> {
+    // async deleteProduct(id: number): Promise<{ message: string }> {
         
-        const product = await this.productRepository.findOne({ where: { id: Number(id) } });
+    //     const product = await this.productRepository.findOne({ where: { id: Number(id) } });
         
-        if (!product) {
-            throw new NotFoundException(`Product ${id} not found.`);
-        }
+    //     if (!product) {
+    //         throw new NotFoundException(`Product ${id} not found.`);
+    //     }
         
-        await this.productRepository.remove(product);
-        return { message: `Product ${id} deleted successfully.` };
-    }
+    //     await this.productRepository.remove(product);
+    //     return { message: `Product ${id} deleted successfully.` };
+    // }
 
-    /*<========================================>
-       🚩      Delete A Single Product End     🚩
-    ===========================================>*/
+    // /*<========================================>
+    //    🚩      Delete A Single Product End     🚩
+    // ===========================================>*/
 
 
 }
