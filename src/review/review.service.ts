@@ -23,30 +23,36 @@ export class ReviewService {
     /*<========================================>
       🏳️      create Review Part Start     🏳️
     ===========================================>*/
-    async createReview(createReviewDto: CreateReviewDto, userId: number): Promise<any> {
+   async createReview(createReviewDto: CreateReviewDto, userId: number): Promise<any> {
+    const { productId , ...reviewData } = createReviewDto;
 
-        const { productId , ...reviewData} = createReviewDto;
-
-        const user = await this.userRepository.findOne({ where: { id: userId } });
-        console.log(user);
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-
-        const product = await this.productRepository.findOne({ where: { id: productId } });
-        console.log(product);
-        if (!product) {
-            throw new NotFoundException('Product not found');
-        }
-
-
-        const review = this.reviewRepository.create({ 
-            ...reviewData,
-            user,
-            product
-        });
-        return this.reviewRepository.save(review);
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+        throw new NotFoundException('User not found');
     }
+
+    const product = await this.productRepository.findOne({
+        where: { id: productId },
+        relations: ['vendor'], // এটিই ভীষণ জরুরি
+    });
+    if (!product) {
+        throw new NotFoundException('Product not found');
+    }
+
+    // 🛑 Check: product.vendor থাকবে না (undefined)
+    if (product.vendor?.id === user.id) {
+         return { message: 'Cannot review your own product' };
+    }
+
+    const review = this.reviewRepository.create({
+        ...reviewData,
+        user,
+        product,
+    });
+
+    return this.reviewRepository.save(review);
+}
+
 
 
 
