@@ -32,4 +32,10 @@ export class User {
   @OneToMany(() => Store, (store) => store.storeOwner) // changed from store.owner
   stores: Store[];
 
+  // // ... অন্যান্য ফিল্ড
+
+  //   @OneToMany(() => Review, (review) => review.product)
+  //   reviews: Review[];
+
+
 }
