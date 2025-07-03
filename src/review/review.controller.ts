@@ -1,8 +1,9 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ReviewService } from './review.service';
 import { JwtAuthGuard } from 'src/jwt-auth.guard';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { UpdateReviewDto } from './dto/Update-review.dto';
 
 @ApiTags('Review')
 @Controller('review')
@@ -23,9 +24,49 @@ export class ReviewController {
     }
     /*🚩<===============(Create Review End)===============>🚩*/
 
+    /*🏳️<===============(Update Review Start)===============>🏳️*/
+    @Put('updatereview/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Update an existing review' })
+    @ApiResponse({ status: 200, description: 'Review updated successfully.' })
+    @ApiResponse({ status: 401, description: 'Unauthorized.' })
+    @ApiResponse({ status: 404, description: 'Review not found.' })
+    async updateReview(@Body() updateReviewDto: UpdateReviewDto, @Request() req, @Param('id') id: string) {
+        return this.reviewService.updateReview(updateReviewDto, req.user.id, +id);
+    }
+    /*🚩<===============(Update Review End)===============>🚩*/
+
+
+    /*🏳️<===============(Delete Review Start)===============>🏳️*/
+
+   /*🏳️<===============(Delete Review Start)===============>🏳️*/
+    @Delete('deletereview/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Delete a review by ID' })
+    @ApiResponse({ status: 200, description: 'Review deleted successfully.' })
+    @ApiResponse({ status: 401, description: 'Unauthorized.' })
+    @ApiResponse({ status: 404, description: 'Review not found.' })
+    async deleteReview(@Param('id') id: string, @Request() req) {
+        
+        return this.reviewService.deleteReview(+id, req.user.id);
+    }
+    /*🚩<===============(Delete Review End)===============>🚩*/
+
+
+
+    
+
+
+
+
+    
+
+
+
  
-    // update
-    // delete
+   
     // get all reviews
     // get reviews by product id
 

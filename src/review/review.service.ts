@@ -5,6 +5,7 @@ import { Review } from 'src/entity/review.entity';
 import { Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { User } from 'src/entity/user.entity';
+import { UpdateReviewDto } from './dto/Update-review.dto';
 
 
 @Injectable()
@@ -51,13 +52,82 @@ export class ReviewService {
     });
 
     return this.reviewRepository.save(review);
-}
 
-
-
+   }
 
     /*<========================================>
       🚩      create Review Part End       🚩
     ===========================================>*/
+
+    /*<========================================>
+      🏳️      Update Review Part Start     🏳️
+    ===========================================>*/
+    async updateReview(updateReviewDto: UpdateReviewDto, userId: number, reviewId: number): Promise<any> {
+        
+    
+          const user = await this.userRepository.findOne({ where: { id: userId } });
+          if (!user) {
+                throw new NotFoundException('User not found');
+          }
+    
+          const review = await this.reviewRepository.findOne({
+                where: { id: reviewId },
+                relations: ['user'],
+          });
+
+
+          if(review?.user?.id !== userId ){
+             return { message: 'Cannot review your own product' };
+          }
+          
+          Object.assign(review,updateReviewDto);
+
+          const updated = await this.reviewRepository.save(review);
+
+           return {
+                message: 'Store updated successfully',
+                store: updated,
+            };
+
+     }
+     /*<========================================>
+       🚩      Update Review Part End      🚩
+    ===========================================>*/
+     /*<========================================>
+      🏳️      Delete Review Part Start     🏳️
+    ===========================================>*/
+   
+    async deleteReview(reviewId: number, userId: number): Promise<any> {
+
+        console.log(userId)
+
+        const review = await this.reviewRepository.findOne({
+            where: { id: reviewId },
+            relations: ['user'],
+        });
+
+        
+
+        if (!review) {
+            throw new NotFoundException('Review not found');
+        }
+
+        
+        if (review?.user?.id !== userId) {
+            return { message: 'You can only delete your own review' };
+        }
+
+        await this.reviewRepository.remove(review);
+
+        return { message: 'Review deleted successfully' };
+    }
+    /*<========================================>
+    🚩      Delete Review Part End       🚩
+    ===========================================>*/
+
+
+
+
+
 
 }
