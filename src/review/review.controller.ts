@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ReviewService } from './review.service';
 import { JwtAuthGuard } from 'src/jwt-auth.guard';
@@ -38,7 +38,7 @@ export class ReviewController {
     /*🚩<===============(Update Review End)===============>🚩*/
 
 
-    /*🏳️<===============(Delete Review Start)===============>🏳️*/
+    
 
    /*🏳️<===============(Delete Review Start)===============>🏳️*/
     @Delete('deletereview/:id')
@@ -53,6 +53,27 @@ export class ReviewController {
         return this.reviewService.deleteReview(+id, req.user.id);
     }
     /*🚩<===============(Delete Review End)===============>🚩*/
+
+
+    /*🏳️<===============(Get All Review Start)===============>🏳️*/
+    @Get('getAllReview')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get All Reviews' })
+    @ApiResponse({ status: 200, description: 'Successfully retrieved all reviews.' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 404, description: 'Reviews not found' })
+    async getAllReview() {
+        return this.reviewService.allReview();
+    }
+
+
+    /*🚩<===============(Delete All Review End)===============>🚩*/
+
+
+
+
+    
 
 
 

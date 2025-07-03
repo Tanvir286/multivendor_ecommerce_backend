@@ -122,7 +122,36 @@ export class ReviewService {
         return { message: 'Review deleted successfully' };
     }
     /*<========================================>
-    🚩      Delete Review Part End       🚩
+      🚩     Delete Review Part End      🚩
+    ===========================================>*/
+
+    /*<========================================>
+       🏳️   Get All Review Start    🏳️
+    ===========================================>*/
+
+    async allReview(): Promise<any[]> {
+
+        const reviews = await this.reviewRepository.find({
+            relations: ['user', 'product'],
+            order: { createdAt: 'DESC' }, 
+        });
+
+        if (!reviews || reviews.length === 0) {
+            throw new NotFoundException('No reviews found');
+        }
+
+     console.log(reviews)
+
+     return reviews.map((review) => ({
+        id: review.id,
+        rating: review.rating,
+        comment: review.comment,
+    }));
+
+
+    }
+     /*<========================================>
+         🚩     Delete All Review End     🚩
     ===========================================>*/
 
 
