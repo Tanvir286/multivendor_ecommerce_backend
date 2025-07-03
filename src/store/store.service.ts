@@ -48,9 +48,8 @@ export class StoreService {
      /*<========================================>
          🏳️  Get All Create Store Start    🏳️
     ===========================================>*/
-    async getStoresByUser(userId: number): Promise<any[]> {
+    async getAllStores(): Promise<any[]> {
      const stores = await this.storeRepository.find({
-        where: { storeOwner: { id: userId } },
         relations: ['storeOwner', 'products', 'products.reviews'],
         })
         return Promise.all(
@@ -75,21 +74,25 @@ export class StoreService {
          🏳️  Get Single Store By ID Start    🏳️
     ===========================================>*/
  
-    async getStoreById(id: number, userId: number): Promise<Store> {
-        const store = await this.storeRepository.findOne({
+    async getStoreById(id: number): Promise<any> {
+      const store = await this.storeRepository.findOne({
             where: { id },
-            relations: ['storeOwner','products', 'products.reviews'],
+            relations: ['storeOwner', 'products', 'products.reviews'],
         });
 
         if (!store) {
             throw new NotFoundException('Store not found');
         }
 
-        if (store.storeOwner.id !== userId) {
-            throw new NotFoundException('You do not have access to this store');
-        }
-     return store;
-    }
+        const { averageRating, totalReviews, productsWithStats } = this.calculateStoreReview(store);
+
+        return {
+            ...store,
+            products: productsWithStats,
+            averageStoreRating: parseFloat(averageRating.toFixed(2)),
+            totalReviews,
+        };
+  }
 
     /*<========================================>
        🚩      Get Single Store By ID End     🚩

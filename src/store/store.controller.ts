@@ -33,9 +33,9 @@ export class StoreController {
   @ApiOperation({ summary: 'Get all stores for the current user' })
   @ApiResponse({ status: 200, description: 'Stores retrieved successfully.'}) 
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getAllStores(@Request() req: any) {
-    const userId = req.user.id;
-    return this.storeService.getStoresByUser(userId);
+  async getAllStores() {
+  
+    return this.storeService.getAllStores();
   }
   /*🚩<===============(Get All Stores End)===============>🚩 */
 
@@ -46,10 +46,10 @@ export class StoreController {
   @ApiOperation({ summary: 'Get store by ID' })
   @ApiResponse({ status: 200, description: 'Store retrieved successfully.' })
   @ApiResponse({ status: 404, description: 'Store not found' })
-  @ApiResponse({ status: 403, description: 'Access denied' }) // 🆕
-  async getStoreById(@Param('id') id: string, @Request() req: any) {
-    const userId = req.user.id;
-    return this.storeService.getStoreById(+id, userId);
+  @ApiResponse({ status: 403, description: 'Access denied' }) 
+  async getStoreById(@Param('id') id: string) {
+
+    return this.storeService.getStoreById(+id);
   }
   /*🚩<===============(Get Store By ID End)===============>🚩 */
   /*🏳️<===============(Delete Store by ID Start)===============>🏳️ */
