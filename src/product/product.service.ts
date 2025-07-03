@@ -109,7 +109,7 @@ export class ProductService {
                 },
             },
             },
-            relations: ['vendor', 'store'],
+            relations: ['vendor', 'store',],
         });
 
         if (products.length === 0) {
@@ -117,7 +117,7 @@ export class ProductService {
         }
 
         return {
-            message: 'Product Successful Return',
+            message: 'Product Successful Retun',
             products: products,
         };
     }

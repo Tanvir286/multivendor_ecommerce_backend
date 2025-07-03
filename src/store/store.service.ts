@@ -48,11 +48,24 @@ export class StoreService {
      /*<========================================>
          🏳️  Get All Create Store Start    🏳️
     ===========================================>*/
-    async getStoresByUser(userId: number): Promise<Store[]> {
-        return this.storeRepository.find({
-            where: { storeOwner: { id: userId } },
-            relations: ['storeOwner'],});
-    }
+    async getStoresByUser(userId: number): Promise<any[]> {
+     const stores = await this.storeRepository.find({
+        where: { storeOwner: { id: userId } },
+        relations: ['storeOwner', 'products', 'products.reviews'],
+        })
+        return Promise.all(
+        stores.map(async (store) => {
+            console.log(store)
+            const { averageRating, totalReviews, productsWithStats } = this.calculateStoreReview(store);
+                return {
+                ...store,
+                products: productsWithStats,
+                averageStoreRating: parseFloat(averageRating.toFixed(2)),
+                totalReviews,
+                };
+         }),
+        );
+   }
     /*<========================================>
        🚩      Get All Create Store End     🚩
     ===========================================>*/
@@ -65,7 +78,7 @@ export class StoreService {
     async getStoreById(id: number, userId: number): Promise<Store> {
         const store = await this.storeRepository.findOne({
             where: { id },
-            relations: ['storeOwner'],
+            relations: ['storeOwner','products', 'products.reviews'],
         });
 
         if (!store) {
@@ -145,9 +158,46 @@ export class StoreService {
          🚩  Update Store By ID End    🚩
     ===========================================>*/
 
- 
+    /*<========================================>
+         🏳️  calculateStoreReview  start 🏳️
+    ===========================================>*/
 
+    private calculateStoreReview(store: Store): {
+      averageRating: number;
+      totalReviews: number;
+      productsWithStats: any[];
+     } {
+        let ratingSum = 0;
+        let totalReviews = 0;
 
+        const productsWithStats = store.products.map((product) => {
+            console.log(product);
+            const total = product.reviews.length;
+            const sum = product.reviews.reduce((s, r) => s + r.rating, 0);
+            const avg = total > 0 ? sum / total : 0;
+
+            ratingSum += sum;
+            totalReviews += total;
+
+            return {
+                ...product,
+                averageRating: parseFloat(avg.toFixed(2)),
+                totalReviews: total,
+            };
+     });
+
+        const averageRating = totalReviews > 0 ? ratingSum / totalReviews : 0;
+
+        return {
+        averageRating,
+        totalReviews,
+        productsWithStats,
+        };
+    }
+
+    /*<========================================>
+         🚩  calculateStoreReview  start 🚩
+    ===========================================>*/
 
 
 

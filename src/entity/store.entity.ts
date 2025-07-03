@@ -1,6 +1,7 @@
 
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn, OneToMany } from 'typeorm';
 import { User } from './user.entity';
+import { Product } from './product.entity';
 
 @Entity()
 export class Store {
@@ -19,5 +20,10 @@ export class Store {
 
   @ManyToOne(() => User, (user) => user.stores)
   storeOwner: User; // changed from owner
+
+
+  // new added
+  @OneToMany(() => Product, (product) => product.store)
+  products: Product[];
 
 }

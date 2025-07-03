@@ -24,6 +24,11 @@ export class ReviewController {
     /*🚩<===============(Create Review End)===============>🚩*/
 
  
+    // update
+    // delete
+    // get all reviews
+    // get reviews by product id
+
 
 
 
