@@ -10,19 +10,18 @@ export class Store {
   id: number;
 
   @Column({ unique: true })
-   storeName: string; // changed from name
-
+   storeName: string;
+   
   @Column()
-  storeDescription: string; // changed from description
+  storeDescription: string; 
 
   @CreateDateColumn()
   createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.stores)
-  storeOwner: User; // changed from owner
+  storeOwner: User; 
 
 
-  // new added
   @OneToMany(() => Product, (product) => product.store)
   products: Product[];
 

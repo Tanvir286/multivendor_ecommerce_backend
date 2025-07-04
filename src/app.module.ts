@@ -10,6 +10,8 @@ import { StoreModule } from './store/store.module';
 import { Store } from './entity/store.entity';
 import { ReviewModule } from './review/review.module';
 import { Review } from './entity/review.entity';
+import { CategoryModule } from './category/category.module';
+import { Category } from './entity/catagory.entity';
 
 
 @Module({
@@ -21,10 +23,10 @@ import { Review } from './entity/review.entity';
       username: "postgres",
       password: "1943",
       database: "multi_ecommerce",
-      entities: [User,Product,Store,Review],
+      entities: [User,Product,Store,Review,Category],
       synchronize: true,
     }), 
-    AuthModule, ProductModule, StoreModule, ReviewModule
+    AuthModule, ProductModule, StoreModule, ReviewModule, CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService],

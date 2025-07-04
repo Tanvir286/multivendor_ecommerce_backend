@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Store } from 'src/entity/store.entity';
 import { User } from 'src/entity/user.entity';
@@ -31,7 +31,7 @@ export class StoreService {
 
         const existingStore = await this.storeRepository.findOne({ where: { storeName } });
         if (existingStore) {
-            throw new NotFoundException('Store with this name already exists');
+            throw new ConflictException('Store with this name already exists');
         }
 
         const store = this.storeRepository.create({

@@ -41,7 +41,7 @@ export class StoreController {
 
   /*🏳️<===============(Get Store By ID Start)===============>🏳️ */
   @Get('getSingleStore/:id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get store by ID' })
   @ApiResponse({ status: 200, description: 'Store retrieved successfully.' })

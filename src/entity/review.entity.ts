@@ -14,14 +14,14 @@ export class Review {
 
     @Column({ nullable: true })
     comment: string;
+   
+    @CreateDateColumn()
+    createdAt: Date;
 
     @ManyToOne(() => User, (user) => user.id)
     user: User;
 
     @ManyToOne(() => Product, (product) => product.reviews)
     product: Product;
-
-    @CreateDateColumn()
-    createdAt: Date;
     
 }

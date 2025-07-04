@@ -4,6 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'ty
 import { User } from './user.entity';
 import { Store } from './store.entity';
 import { Review } from './review.entity';
+import { Category } from './catagory.entity';
 
 @Entity()
 export class Product {
@@ -23,18 +24,30 @@ export class Product {
   @Column()
   productStock: number;
 
-  @Column({ nullable: true }) // allow null for optional image
+  @Column({ nullable: true }) 
   productImageUrl: string;
 
-  @ManyToOne(() => User, (user) => user.id)  // =product er
+
+  @ManyToOne(() => User, (user) => user.id)  // =user er
   vendor: User;
+
 
   @ManyToOne(()=> Store, (store) => store.id)  //= store er
   store:Store;
 
 
-  // Review Part ata
-  @OneToMany(() => Review, (review) => review.product)  //= store er
+  @OneToMany(() => Review, (review) => review.product)  //= review er
   reviews: Review[];
+
+
+  @ManyToOne(() => Category, (category) => category.product)  //= Category
+  catagory: Category;
+
+
+
+
+
+
+
 
 }

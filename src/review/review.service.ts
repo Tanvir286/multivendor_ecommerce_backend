@@ -140,13 +140,11 @@ export class ReviewService {
             throw new NotFoundException('No reviews found');
         }
 
-     console.log(reviews)
-
-     return reviews.map((review) => ({
-        id: review.id,
-        rating: review.rating,
-        comment: review.comment,
-    }));
+        return reviews.map((review) => ({
+            id: review.id,
+            rating: review.rating,
+            comment: review.comment,
+        }));
 
 
     }

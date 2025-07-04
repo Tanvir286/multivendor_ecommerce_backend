@@ -29,13 +29,8 @@ export class User {
   @Column({ nullable: true }) 
   refreshToken?: string; 
 
-  @OneToMany(() => Store, (store) => store.storeOwner) // changed from store.owner
+  @OneToMany(() => Store, (store) => store.storeOwner) 
   stores: Store[];
-
-  // // ... অন্যান্য ফিল্ড
-
-  //   @OneToMany(() => Review, (review) => review.product)
-  //   reviews: Review[];
 
 
 }
