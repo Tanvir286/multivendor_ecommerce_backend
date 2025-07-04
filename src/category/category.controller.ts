@@ -11,6 +11,7 @@ export class CategoryController {
     
     constructor(private readonly categoryService:CategoryService){}
 
+    /*🏳️<===============(Create Category Start)===============>🏳️ */
     @Post('createcategory')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth() 
@@ -21,6 +22,14 @@ export class CategoryController {
     async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
       return this.categoryService.createCategory(createCategoryDto);
     }
+    /*🏳️<===============(Create Category End)===============>🏳️ */
+     /*🏳️<===============(Update Category Start)===============>🏳️ */
+     
+
+
+
+
+
 
 
 
