@@ -8,7 +8,10 @@ export class Category {
 
     @PrimaryGeneratedColumn()
     id:number; 
- 
+
+    @Column()
+    ownerId:number;
+
     @Column({ unique: true })
     categoryName: string;
 
