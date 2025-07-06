@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
 import { JwtAuthGuard } from 'src/jwt-auth.guard';
@@ -36,11 +36,26 @@ export class CategoryController {
     @ApiResponse({ status: 403, description: 'Access denied. Only owner can update.' })
     async updateCategory(@Param('id') id: string, @Body() updateCategoryDto: CreateCategoryDto, @Request() req: any) {
         const ownerId = req.user.id;
+        console.log(ownerId)
         return this.categoryService.updateCategory(+id, updateCategoryDto, ownerId);
     }
     /*🚩<===============(Update Category End)===============>🚩 */
 
-    
+    /*🏳️<===============(Delete Category Start)===============>🏳️ */
+
+    @Delete('deleteCategory/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Delete a category' })
+    @ApiResponse({ status: 200, description: 'Category deleted successfully.' })
+    @ApiResponse({ status: 404, description: 'Category not found.' })
+    @ApiResponse({ status: 403, description: 'Access denied. Only owner can delete.' })
+    async deleteCategory(@Param('id') id: string, @Request() req: any) {
+        const ownerId = req.user.id;
+        return this.categoryService.deleteCategory(+id, ownerId);
+    }
+
+    /*🚩<===============(Delete Category End)===============>🚩 */
 
 
 

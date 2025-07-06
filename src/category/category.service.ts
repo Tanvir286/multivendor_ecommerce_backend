@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/entity/catagory.entity';
 import { Repository } from 'typeorm';
@@ -43,10 +43,22 @@ export class CategoryService {
     /*<========================================>
            🏳️   Update Category Start    🏳️
     ===========================================>*/
-    async updateCategory(id: number, updateCategoryDto: CreateCategoryDto, ownerId: number): Promise<Category> {
-      const category = await this.categoryRepository.findOne({ where: { id, ownerId } });
+    async updateCategory(
+        id: number, 
+        updateCategoryDto: CreateCategoryDto, 
+        ownerId: number):Promise<any> {
+      
+      const category = await this.categoryRepository.findOne({ where: { id } });
+
+      console.log(category)
+
       if (!category) {
           throw new NotFoundException('Category not found');
+
+      }
+
+      if( category.ownerId !== ownerId) {
+          throw new ForbiddenException('Access denied. Only owner can update.'); 
       }
 
       Object.assign(category, updateCategoryDto);
@@ -54,10 +66,26 @@ export class CategoryService {
     }
     /*<========================================>
        🚩       Update Category End        🚩
+    ===========================================>*/
+    /*<========================================>
+           🏳️   Delete Category Start    🏳️
+    ===========================================>*/
+    async deleteCategory(id: number, ownerId: number): Promise<{ message: string }> {
+        const category = await this.categoryRepository.findOne({ where: { id } });
 
+        if (!category) {
+            throw new NotFoundException('Category not found');
+        }
+          if (category.ownerId !== ownerId) {
+              throw new ForbiddenException('Access denied. Only owner can delete.');
+          } 
 
+        await this.categoryRepository.remove(category);
 
+        return { message: 'Category deleted successfully',}
+      }
+    }
+    /*<========================================>
+       🚩       Delete Category End        🚩
+    ===========================================>*/
 
-
-
-}
