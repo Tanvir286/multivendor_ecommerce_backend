@@ -82,10 +82,72 @@ export class CategoryService {
 
         await this.categoryRepository.remove(category);
 
-        return { message: 'Category deleted successfully',}
-      }
-    }
-    /*<========================================>
-       🚩       Delete Category End        🚩
-    ===========================================>*/
+            return { message: 'Category deleted successfully',}
+          }
+        /*<========================================>
+           🚩       Delete Category End        🚩
+        ===========================================>*/
+        /*<========================================>
+               🏳️   Get All Categories Start    🏳️
+        ===========================================>*/
+    
+        async getAllCategory(ownerId: number): Promise<Category[]> {
+    
+            const categories = await this.categoryRepository.find({ where: { ownerId } });
+    
+            if (!categories || categories.length === 0) {
+                throw new NotFoundException('No categories found for this user');
+            }
+    
+            return categories;
+        }
+        
+    
+        /*<========================================>
+           🚩       Get All Categories End        🚩
+        ===========================================>*/
+        /*<========================================>
+               🏳️   Get Category By ID Start    🏳️
+        ===========================================>*/
+        async getCategoryById(id: number, ownerId: number): Promise<Category> {
+            const category = await this.categoryRepository.findOne({ where: { id } });
 
+            if (!category) {
+                throw new NotFoundException('Category not found');
+            }
+
+            if (category.ownerId !== ownerId) {
+                throw new ForbiddenException('Access denied. Only owner can view.');
+            }
+
+            return category;
+        }
+        /*<========================================>
+          🚩       Get Category By ID End        🚩
+        ===========================================>*/
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+}

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
 import { JwtAuthGuard } from 'src/jwt-auth.guard';
@@ -56,16 +56,34 @@ export class CategoryController {
     }
 
     /*🚩<===============(Delete Category End)===============>🚩 */
+    /*🏳️<===============(Get All Categories Start)===============>🏳️ */
 
+    @Get('getAllCategory')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get all categories' })
+    @ApiResponse({ status: 200, description: 'Categories retrieved successfully.' })
+    @ApiResponse({ status: 401, description: 'Unauthorized. No token or invalid token.' })
+    async getAllCategories(@Request() req: any) {
+        const ownerId = req.user.id;
+        return this.categoryService.getAllCategory(ownerId);
+    }
 
+    /*🚩<===============(Get All Categories End)===============>🚩 */
 
-
-
-
-
-     
-
-
+    /*🏳️<===============(Get Category By ID Start)===============>🏳️ */
+    @Get('getCategoryById/:id')
+    @UseGuards(JwtAuthGuard)  
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get a category by ID' })
+    @ApiResponse({ status: 200, description: 'Category retrieved successfully.' })
+    @ApiResponse({ status: 404, description: 'Category not found.' })
+    @ApiResponse({ status: 401, description: 'Unauthorized. No token or invalid token.' })
+    async getCategoryById(@Param('id') id: string, @Request() req: any) {
+        const ownerId = req.user.id;
+        return this.categoryService.getCategoryById(+id, ownerId);
+    }
+    /*🚩<===============(Get Category By ID End)===============>🚩 */
 
 
 
