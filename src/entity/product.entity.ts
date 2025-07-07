@@ -24,8 +24,8 @@ export class Product {
   @Column()
   productStock: number;
 
-  @Column({ nullable: true }) 
-  productImageUrl: string;
+  @Column({ nullable: true}) 
+  productImageUrl: string; 
 
 
   @ManyToOne(() => User, (user) => user.id)  // =user er
