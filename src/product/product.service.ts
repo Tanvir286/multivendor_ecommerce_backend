@@ -110,7 +110,7 @@ export class ProductService {
             },
             },
             relations: ['vendor', 'store',],
-        });
+        }); 
 
         if (products.length === 0) {
             return { message: 'NO Product Found' };
