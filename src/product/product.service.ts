@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Store } from 'src/entity/store.entity';
+import { Category } from 'src/entity/catagory.entity';
 
 @Injectable()
 export class ProductService {
@@ -17,8 +18,14 @@ export class ProductService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
 
-     @InjectRepository(Store)
+    @InjectRepository(Store)
     private storeRepository: Repository<Store>,
+
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
+
+
+
   ) {}
 
     /*<========================================>
@@ -32,7 +39,7 @@ export class ProductService {
     ): 
     Promise<{ message: string; product?: Product }> {
 
-    const { storeId } = createProductDto; 
+    const { storeId ,categoryId} = createProductDto; 
 
     // user kuja hoitase
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -46,12 +53,20 @@ export class ProductService {
         throw new NotFoundException(`Store ${storeId} not found.`);
     }
 
+    // category kuja hoitase
+    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+    if (!category) {
+        throw new NotFoundException(`Category ${categoryId} not found.`);
+    }
+
+
     const product = this.productRepository.create({
                     ...createProductDto,
                     productImageUrl: imagePath,
                     vendor: user,
-                    store: store,
+                    store: store, 
                 });
+
 
     try {
         const savedProduct = await this.productRepository.save(product);
