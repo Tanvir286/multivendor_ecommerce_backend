@@ -32,14 +32,14 @@ export class UpdateProductDto {
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
-  storeId: number;
+  storeId?: number;
 
 
   @ApiProperty({ description: 'Store ID', example: 1 })
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
-  categoryId: number;
+  categoryId?: number;
 
 }
 

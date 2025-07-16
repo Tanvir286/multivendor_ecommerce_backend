@@ -25,7 +25,6 @@ export class ProductService {
     private categoryRepository: Repository<Category>,
 
 
-
   ) {}
 
     /*<========================================>
@@ -43,28 +42,34 @@ export class ProductService {
 
     // user kuja hoitase
     const user = await this.userRepository.findOne({ where: { id: userId } });
+    console.log(user);
     if (!user) {
         throw new NotFoundException(`User ${userId} not found.`);
     }
 
     // store kuja hoitase
     const store = await this.storeRepository.findOne({ where: { id: storeId, storeOwner: { id: userId } } });
-    if (!store) { 
+    console.log(store);
+    if (!store) {
         throw new NotFoundException(`Store ${storeId} not found.`);
     }
 
     // category kuja hoitase
-    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+    const category = await this.categoryRepository.findOne({ where: { id: categoryId , ownerId: userId} });
+    console.log(category);
+
     if (!category) {
         throw new NotFoundException(`Category ${categoryId} not found.`);
     }
 
+    console.log(createProductDto)
 
     const product = this.productRepository.create({
                     ...createProductDto,
-                    productImageUrl: imagePath,
+                    productImageUrl: imagePath, 
                     vendor: user,
                     store: store, 
+                    catagory: category,
                 });
 
 
@@ -164,6 +169,25 @@ export class ProductService {
 
     if (product.vendor.id !== userId) {
         throw new NotFoundException(`Product ${id} not found or you are not authorized.`);
+    }
+
+    // Check if storeId is provided and valid
+    if (updateProductDto.storeId) {
+    
+        const store = await this.storeRepository.findOne({ where: { id: updateProductDto.storeId, storeOwner: { id: userId } } });
+        if (!store) {
+            throw new NotFoundException(`Store ${updateProductDto.storeId} not found. or you are not onwer`);
+        }
+        product.store = store;
+    }
+ 
+    // Check if categoryId is provided
+    if (updateProductDto.categoryId) {
+        const category = await this.categoryRepository.findOne({ where: { id: updateProductDto.categoryId, ownerId: userId } });
+        if (!category) {
+            throw new NotFoundException(`Category ${updateProductDto.categoryId} not found. or you are not onwer`);
+        }
+        product.catagory = category;
     }
 
 
