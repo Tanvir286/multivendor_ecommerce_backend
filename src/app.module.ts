@@ -12,6 +12,7 @@ import { ReviewModule } from './review/review.module';
 import { Review } from './entity/review.entity';
 import { CategoryModule } from './category/category.module';
 import { Category } from './entity/catagory.entity';
+import { CouponModule } from './coupon/coupon.module';
 
 
 @Module({
@@ -26,7 +27,7 @@ import { Category } from './entity/catagory.entity';
       entities: [User,Product,Store,Review,Category],
       synchronize: true,
     }), 
-    AuthModule, ProductModule, StoreModule, ReviewModule, CategoryModule
+    AuthModule, ProductModule, StoreModule, ReviewModule, CategoryModule, CouponModule
   ],
   controllers: [AppController],
   providers: [AppService],
