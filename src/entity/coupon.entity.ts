@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Store } from "./store.entity";
 
 
@@ -38,24 +38,23 @@ export class Coupon {
     //============================================
     @Column({ nullable: true })
     productId?: number;
-
+  
 
     @Column({ nullable: true })
     categoryId?: number;
     //============================================
 
-
-    @Column({ nullable: true })
-    storeId?: number;
-
-
     @Column({type: 'timestamp', nullable: true})
-    expireAt: Date;
+    expireAt?: Date;
+
+
+    @CreateDateColumn()
+    createdAt: Date;
 
     // Assuming Coupon can be associated with a Store
     @ManyToOne(() => Store, (store) => store.coupons)
     @JoinColumn({ name: 'store_id' }) // database column will be 'store_id'
-    store?: Store;
+    store: Store;
 
 
 }
