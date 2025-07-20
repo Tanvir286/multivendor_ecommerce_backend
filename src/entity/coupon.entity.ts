@@ -27,18 +27,16 @@ export class Coupon {
     discountType: 'FIXED' | 'PERCENTAGE' ;
 
     @Column('decimal')
-    discountAmount: number;
+    discountValue: number;
 
     @Column({ type: 'enum', enum: ['PRODUCT','CATEGORY','FLAT'] })
     scope: 'PRODUCT' | 'CATEGORY' | 'FLAT' ;
 
-    //============================================
     @Column({ nullable: true })
     productId?: number;
   
     @Column({ nullable: true })
     categoryId?: number;
-    //============================================
 
     @Column({type: 'timestamp', nullable: true})
     expireAt?: Date;

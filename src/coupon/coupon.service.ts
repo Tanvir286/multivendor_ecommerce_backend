@@ -38,7 +38,7 @@ export class CouponService {
 
         const { couponCode, 
                 discountType, 
-                discountAmount,
+                discountValue,
                 scope,
                 storeId, 
                 productId, 
@@ -46,19 +46,20 @@ export class CouponService {
                 expireAt } = createCouponDto;
             
 
-        // Check if the store exists and belongs to the user
+        // 1️⃣ Store ownership check
         const store = await this.storeRepository.findOne({ where: { id: storeId, storeOwner: { id: userId } } });
         if (!store) {
             throw new NotFoundException(`Store with ID ${storeId} not found or your are not onwer `);
         }
    
-        // coupon ase kina
+        // 2️⃣ Coupon Code uniqueness check
         const existingCoupon = await this.couponRepository.findOne({where: { couponCode }})
+
         if(existingCoupon){
              throw new BadRequestException(`Coupon already exists`);
         }
 
-        // more check
+        // 3️⃣ Scope validation
         if(scope === "PRODUCT" && productId){
             const product =  await this.productRepository.findOne({where:{id:productId, store:{id: storeId }}})
             if(!product){
@@ -79,33 +80,43 @@ export class CouponService {
         }
         
 
-        // percentage check
-        if(discountType === 'PERCENTAGE' && (discountAmount < 1 || discountAmount > 100)){
+        // 4️⃣ Discount type validation
+        if(discountType === 'PERCENTAGE' && (discountValue < 1 || discountValue > 100)){
             throw new BadRequestException('Percentage disount must be between 1 and 100')
-        }else if(discountType === 'FIXED' && discountAmount <= 0){
+        }else if(discountType === 'FIXED' && discountValue <= 0){
             throw new BadRequestException('Fixed discount must be greater than 0')
         }
 
 
-        // save db
-        const coupon =  this.couponRepository.create({
-            couponCode, 
-            discountType, 
-            discountAmount,
+        
+
+
+        // 6️⃣ Create coupon
+        const coupon = this.couponRepository.create({
+            couponCode,
+            discountType,
+            discountValue,
             scope,
-            store, 
-            productId, 
+            store,
+            productId,
             categoryId,
-            expireAt: expireAt ? new Date(expireAt): undefined
+            expireAt: expireAt ? new Date(expireAt) : undefined
+        });
 
-        } )
+        const savedCoupon = await this.couponRepository.save(coupon);
           
+        return {
+            message: "Coupon created successfully",
+            data: savedCoupon
+        }
+    
+    
+    
+    }
 
 
-
-        return await this.couponRepository.save(coupon);}
-
-
-
+    /*<========================================>
+       🚩       Create Coupon End        🚩
+    ===========================================>*/
 
 }

@@ -11,7 +11,7 @@ export class CouponController {
 
     constructor(private readonly couponService: CouponService) {}
 
-    @Post('create')
+    @Post('createCoupon')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @ApiOperation({summary:'Create a new coupon'}) 
