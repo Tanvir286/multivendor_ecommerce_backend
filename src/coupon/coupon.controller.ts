@@ -20,11 +20,9 @@ export class CouponController {
     @ApiResponse({status:403, description:"You are not owner"})
     @ApiResponse({status:404, description:"Not Found"})
     async  create(@Body() createCouponDto : CreateCouponDto , @Request() req:any): Promise<any> {
-
-        const userId = req.user.id;
-
-        return this.couponService.create(createCouponDto, userId);
-    }
+     const userId = req.user.id;
+    return this.couponService.create(createCouponDto, userId);
+   }
     
  
 
