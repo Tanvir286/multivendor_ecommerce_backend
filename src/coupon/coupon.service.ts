@@ -88,7 +88,24 @@ export class CouponService {
         }
 
 
+        // same product opr ar coupon na dawya
+        if (scope === 'PRODUCT') {
+        const existing = await this.couponRepository.findOne({ where: { productId, store: { id: storeId } } });
+        if (existing) throw new BadRequestException('Coupon already exists for this product');
+        }
+
+        if (scope === 'CATEGORY') {
+        const existing = await this.couponRepository.findOne({ where: { categoryId, store: { id: storeId } } });
+        if (existing) throw new BadRequestException('Coupon already exists for this category');
+        }
+
         
+        // ata date na ager na hoi
+        if (expireAt && new Date(expireAt) < new Date()) {
+         throw new BadRequestException('Expire date must be in the future');
+        }
+
+
 
 
         // 6️⃣ Create coupon
