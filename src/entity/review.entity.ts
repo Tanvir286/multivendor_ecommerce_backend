@@ -9,10 +9,10 @@ export class Review {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'int' }) 
+    @Column({ type:'int' }) 
     rating: number;
 
-    @Column({ nullable: true })
+    @Column({ nullable:true })
     comment: string;
    
     @CreateDateColumn()
